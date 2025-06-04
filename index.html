@@ -1,123 +1,57 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Movimento Uniforme com Imagem</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <title>Cinemática</title>
 </head>
 <body>
-    <div id="corte"></div>
     <div id="container">
         <header>
-            <h2>Simulador de Movimento Uniforme</h2>
-            <img style="margin-left: 15pxa;" width="50px" src="img/logo.png" alt="">
+            <h1>Cinemática</h1>
         </header>
-
-        <div id="forms">
-            <label>Posição Inicial (m): <input type="number" id="posInicial" value="0"></label>
-            <label>Posição Final (m): <input type="number" id="posFinal" value="100"></label>
-            <label>Velocidade (m/s): <input type="number" id="velocidade" value="10"></label>
-            <br>
-            <a href="#exe" style="text-decoration: none;"><button onclick="iniciar()">Iniciar</button></a>
-        </div>
-
-        <div id="resultados">
-            <canvas id="animacao" width="1080" height="120"></canvas>
-            <h2 id="re"></h2>
-            <div id="tabelaResultados"></div>
-            <div id="exe">
-                <h1>Movimento Uniforme</h1>
-                <p>O movimento uniforme é um tipo de movimento em que um corpo se desloca em linha reta mantendo uma velocidade constante ao longo do tempo. Isso significa que, a cada intervalo de tempo, o objeto percorre sempre a mesma distância, sem acelerar nem desacelerar. A principal característica desse movimento é que a velocidade não muda, ou seja, ela permanece constante do início ao fim. Dessa forma, a posição do objeto varia de maneira proporcional ao tempo. A fórmula que representa esse movimento é S = S₀ + V · t, onde S é a posição final, S₀ é a posição inicial, V é a velocidade constante e t é o tempo. Essa relação mostra que, quanto mais tempo se passa, maior é a distância percorrida, desde que a velocidade permaneça a mesma. Este site foi desenvolvido justamente para simular o movimento uniforme de um carro. Nele, é possível inserir valores de posição inicial, posição final e velocidade, e a partir disso o site gera uma tabela com as posições do carro ao longo do tempo e também uma animação mostrando o carro em movimento, permitindo visualizar na prática como esse conceito funciona.
-                </p>
+        <main>
+            <div id="escolha">
+                <a class="tar" href="#p1">Movimento Uniforme</a>
+                <a class="tar" href="#p2">Parábola</a>
+                <a class="tar" href="#p3">Movimento Uniforme Variado</a>
             </div>
-        </div>
+            <div id="textos">
+                <div id="txt">
+                    <p style="width: 1000px; text-align: justify; font-size: 18px; font-family: Arial, Helvetica, sans-serif; color: #222222;">Cinemática é um ramo da Física que estuda os movimentos dos corpos sem analisar suas causas. Ela se concentra em descrever como os corpos se movem, utilizando grandezas como posição, velocidade, aceleração e tempo. Esse estudo permite entender o deslocamento de objetos, suas velocidades e como esses valores variam ao longo do tempo. A Cinemática considera apenas a trajetória e as variações de movimento, sem levar em conta forças ou outros fatores externos. Os movimentos podem ser classificados de acordo com a trajetória, que pode ser retilínea ou curvilínea, e pela variação da velocidade, que pode ser constante ou variável. Entre os principais tipos de movimento estão o <strong>Movimento Uniforme</strong>, no qual a velocidade permanece constante, e o <strong>Movimento Uniformemente Variado</strong>, no qual a velocidade sofre variações devido à aceleração constante. Além disso, na Cinemática também existe o movimento que ocorre em <strong>trajetórias parabólicas</strong>, conhecido como lançamento oblíquo. Esse tipo de movimento acontece quando um objeto é lançado formando um ângulo em relação à horizontal, seguindo uma trajetória em forma de parábola, que resulta da combinação de dois movimentos simultâneos: um movimento uniforme no eixo horizontal e um movimento uniformemente variado no eixo vertical, devido à ação da gravidade. A Cinemática é fundamental para compreender como ocorrem os movimentos no cotidiano e serve de base para outros estudos na Física, na Engenharia e em diversas áreas que envolvem deslocamento e velocidade.</p>
+                <img width="500px" style="margin-left: 10px;" src="img/Group 90.png" alt=""></div>
+                <div id="p1">111111111111111111111111111111111111111</div>
+                <div id="p2">222222222222222222222222222222222222222</div>
+                <div id="p3"><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestias fuga magnam neque est eos, qui, voluptate, laudantium tempora ipsam ipsa debitis repellat? Minus eaque soluta vel magnam quos eligendi optio!Lorem Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit harum velit magni debitis magnam ad reiciendis labore consectetur incidunt repellat voluptatibus saepe repudiandae, ut quisquam vel, accusantium nesciunt libero illo. Lorem ipsum dolor sit amet consectetur adipisicing elit. At distinctio suscipit dolorum beatae assumenda aliquam culpa quaerat fuga odio enim fugit odit inventore voluptatum, ex rem alias. Facilis, possimus fugit? Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam incidunt vitae totam earum doloremque cumque obcaecati dolorum excepturi saepe, necessitatibus repellat. Eaque sint minus odio tenetur vel deserunt quisquam officiis! Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore similique vero quos, ad minus id libero laboriosam nesciunt atque modi nihil in recusandae consequuntur dicta, voluptates laborum unde sapiente ex. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eaque, quisquam modi! Ullam enim exercitationem velit. Enim amet molestiae quaerat fugit nihil unde, voluptatem nemo accusamus, aliquid fuga doloribus ea incidunt.</p>
+                <img style="margin-top: -40px;" src="img/mapaMental_cinematica.png" alt=""></div>
+            </div>
+        </main>
+        <aside>
+            <h1 style="text-align: center; color: #ffc300; font-size: 40px;">Testes da Cinemática</h1>
+            <div>
+                <a class="testes" style="text-decoration: none;" href="TesteMU.html">Teste do Movimento Uniforme</a>
+                <a class="testes"  style="text-decoration: none;" href="">Teste do Movimento Uniforme Variado</a>
+                <a class="testes"  style="text-decoration: none;" href="">Parábola</a>
+            </div>
+            <img id="setinha" style="width: 30px; position: absolute; right: 10px; top: 300px;" src="img/Union.png" alt="">
+        </aside>
+        <footer>
+            &copy; Todos direitos reservados &reg;
+        </footer>
     </div>
-    <footer>
-        &copy; Todos direitos reservados &reg;
-    </footer>
-
-    <script>
-        const imagemCarro = new Image();
-        imagemCarro.src = 'img/carro_vermelho.png';
-
-        function iniciar() {
-        const s0 = parseFloat(document.getElementById('posInicial').value);
-        const sf = parseFloat(document.getElementById('posFinal').value);
-        const v = parseFloat(document.getElementById('velocidade').value);
-        const distancia = Math.abs(sf - s0);
-        const tempoTotal = distancia / v;
-
-        frase()
-        gerarTabela(s0, v, tempoTotal);
-        animarCarrinho(s0, sf, v, tempoTotal);
-        }
-
-        function frase() {
-            let html = "Resultados da tabela"
-            document.getElementById('re').innerHTML = html
-        }
-        function gerarTabela(s0, v, tempoTotal) {
-            let html = "<table><tr><th>Tempo (s)</th>";
-            // Cabeçalhos dos tempos
-            for (let t = 0; t <= tempoTotal; t++) {
-                html += `<th>${t}</th>`;
-            }
-            html += "</tr><tr><th>Posição (m)</th>";
-            // Valores das posições
-            for (let t = 0; t <= tempoTotal; t++) {
-                let s = s0 + v * t;
-                html += `<td>${s.toFixed(2)}</td>`;
-            }
-            html += "</tr></table>";
-
-            document.getElementById('tabelaResultados').innerHTML = html;
-        }
-
-        function animarCarrinho(s0, sf, v, tempoTotal) {
-        const canvas = document.getElementById('animacao');
-        const ctx = canvas.getContext('2d');
-        const largura = canvas.width;
-        const altura = canvas.height;
-
-        const distancia = Math.abs(sf - s0);
-        const escala = largura / distancia;
-
-        let posAtual = s0;
-        const direcao = sf >= s0 ? 1 : -1;
-        const fps = 60;
-        const intervalo = 1000 / fps;
-        const delta = v / fps;
-
-        function desenharCarrinho() {
-            ctx.clearRect(0, 0, largura, altura);
-
-            // Desenhar linha do caminho
-            ctx.strokeStyle = "#888";
-            ctx.beginPath();
-            ctx.moveTo(0, altura / 2);
-            ctx.lineTo(largura, altura / 2);
-            ctx.stroke();
-
-            const x = (posAtual - s0) * escala;
-            const y = altura / 2 - 20;
-
-            // Desenhar a imagem do carrinho
-            ctx.drawImage(imagemCarro, x, y, 50, 40); 
-        }
-
-        let anim = setInterval(() => {
-            desenharCarrinho();
-            posAtual += delta * direcao;
-
-            if ((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf)) {
-            desenharCarrinho(); // desenha a última vez
-            clearInterval(anim);
-            }
-        }, intervalo);
-        }
-    </script>
-
 </body>
+<script>
+    function esconderTextoAoClicarNosLinks() {
+        const links = document.querySelectorAll('.tar');
+        const texto = document.getElementById('txt');
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                texto.style.display = 'none';
+            });
+        });
+    }
+    esconderTextoAoClicarNosLinks();
+</script>
 </html>
-

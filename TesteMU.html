@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Movimento Uniforme com Imagem</title>
+    <link rel="stylesheet" href="styleMU.css">
+    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+</head>
+<body>
+    <div id="corte"></div>
+    <div id="container">
+        <header>
+            <h2>Simulador de Movimento Uniforme</h2>
+            <img style="margin-left: 15pxa;" width="50px" src="img/logo.png" alt="">
+        </header>
+
+        <div id="forms">
+            <label>Posição Inicial (m): <input type="number" id="posInicial" value="0"></label>
+            <label>Posição Final (m): <input type="number" id="posFinal" value="100"></label>
+            <label>Velocidade (m/s): <input type="number" id="velocidade" value="10"></label>
+            <br>
+            <a href="#exe" style="text-decoration: none;"><button onclick="iniciar()">Iniciar</button></a>
+        </div>
+        <div id="resultados">
+            <canvas id="animacao" width="1080" height="120"></canvas>
+            <h2 id="re"></h2>
+            <div id="tabelaResultados"></div>
+            <div id="exe">
+                <h1>Movimento Uniforme</h1>
+                <p>O movimento uniforme é um tipo de movimento em que um corpo se desloca em linha reta mantendo uma velocidade constante ao longo do tempo. Isso significa que, a cada intervalo de tempo, o objeto percorre sempre a mesma distância, sem acelerar nem desacelerar. A principal característica desse movimento é que a velocidade não muda, ou seja, ela permanece constante do início ao fim. Dessa forma, a posição do objeto varia de maneira proporcional ao tempo. A fórmula que representa esse movimento é S = S₀ + V · t, onde S é a posição final, S₀ é a posição inicial, V é a velocidade constante e t é o tempo. Essa relação mostra que, quanto mais tempo se passa, maior é a distância percorrida, desde que a velocidade permaneça a mesma. Este site foi desenvolvido justamente para simular o movimento uniforme de um carro. Nele, é possível inserir valores de posição inicial, posição final e velocidade, e a partir disso o site gera uma tabela com as posições do carro ao longo do tempo e também uma animação mostrando o carro em movimento, permitindo visualizar na prática como esse conceito funciona.
+                </p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        &copy; Todos direitos reservados &reg;
+    </footer>
+
+    <script>
+        const imagemCarro = new Image();
+        imagemCarro.src = 'img/carro_vermelho.png';
+
+        function iniciar() {
+        const s0 = parseFloat(document.getElementById('posInicial').value);
+        const sf = parseFloat(document.getElementById('posFinal').value);
+        const v = parseFloat(document.getElementById('velocidade').value);
+        const distancia = Math.abs(sf - s0);
+        const tempoTotal = distancia / v;
+
+        frase()
+        gerarTabela(s0, v, tempoTotal);
+        animarCarrinho(s0, sf, v, tempoTotal);
+        }
+
+        function frase() {
+            let html = "Resultados da tabela"
+            document.getElementById('re').innerHTML = html
+        }
+        function gerarTabela(s0, v, tempoTotal) {
+            let html = "<table><tr><th>Tempo (s)</th>";
+            // Cabeçalhos dos tempos
+            for (let t = 0; t <= tempoTotal; t++) {
+                html += `<th>${t}</th>`;
+            }
+            html += "</tr><tr><th>Posição (m)</th>";
+            // Valores das posições
+            for (let t = 0; t <= tempoTotal; t++) {
+                let s = s0 + v * t;
+                html += `<td>${s.toFixed(2)}</td>`;
+            }
+            html += "</tr></table>";
+
+            document.getElementById('tabelaResultados').innerHTML = html;
+        }
+
+        function animarCarrinho(s0, sf, v, tempoTotal) {
+        const canvas = document.getElementById('animacao');
+        const ctx = canvas.getContext('2d');
+        const largura = canvas.width;
+        const altura = canvas.height;
+
+        const distancia = Math.abs(sf - s0);
+        const escala = largura / distancia;
+
+        let posAtual = s0;
+        const direcao = sf >= s0 ? 1 : -1;
+        const fps = 60;
+        const intervalo = 1000 / fps;
+        const delta = v / fps;
+
+        function desenharCarrinho() {
+            ctx.clearRect(0, 0, largura, altura);
+
+            // Desenhar linha do caminho
+            ctx.strokeStyle = "#888";
+            ctx.beginPath();
+            ctx.moveTo(0, altura / 2);
+            ctx.lineTo(largura, altura / 2);
+            ctx.stroke();
+
+            const x = (posAtual - s0) * escala;
+            const y = altura / 2 - 20;
+
+            // Desenhar a imagem do carrinho
+            ctx.drawImage(imagemCarro, x, y, 50, 40); 
+        }
+
+        let anim = setInterval(() => {
+            desenharCarrinho();
+            posAtual += delta * direcao;
+
+            if ((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf)) {
+            desenharCarrinho(); // desenha a última vez
+            clearInterval(anim);
+            }
+        }, intervalo);
+        }
+    </script>
+
+</body>
+</html>
+
