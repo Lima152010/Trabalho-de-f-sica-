@@ -11,7 +11,7 @@
     <div id="container">
         <header>
             <h2>Simulador de Movimento Parabolico</h2>
-            <img style="margin-left: 15pxa;" width="50px" src="../img/logo.png" alt="">
+            <img style="margin-left: 15px;" width="50px" src="../img/logo.png" alt="">
         </header>
 
         <div id="forms">
@@ -19,7 +19,7 @@
             <label>Posição Final (m): <input type="number" id="posFinal" value="100"></label>
             <label>Velocidade (m/s): <input type="number" id="velocidade" value="10"></label>
             <br>
-            <a href="#exe" style="text-decoration: none;"><button onclick="iniciar()">Iniciar</button></a>
+            <button onclick="iniciar()">Iniciar</button>
             <label>Velocidade Inicial do Míssil (m/s): <input type="number" id="velInicialMissil" value="50"></label>
             <label>Ângulo de Lançamento (graus): <input type="number" id="anguloLancamento" value="45"></label>
             <button onclick="lancarMissil()">Lançar Míssil</button>
@@ -41,6 +41,7 @@
 
     <script>
         const imagemCarro = new Image();
+        const imagemMissil = new Image();
         let anim;
         let posAtual;
         let canvas = document.getElementById('animacao');
@@ -55,112 +56,118 @@
         let missilTempo = 0;
         let missilVelInicial = 0;
         let missilAnguloRad = 0;
+        
+        // Constantes físicas
+        const g = 9.8; // Aceleração da gravidade (m/s²)
+        const escalaAltura = 0.5; // Fator de escala para a altura
+        
+        // Carregar imagens
         imagemCarro.src = '../img/carro_vermelho.png';
-
+        imagemMissil.src = '../img/rocket.webp';
+        
         function iniciar() {
-        s0 = parseFloat(document.getElementById('posInicial').value);
-        sf = parseFloat(document.getElementById('posFinal').value);
-        v = parseFloat(document.getElementById('velocidade').value);
-        const distancia = Math.abs(sf - s0);
-        const tempoTotal = distancia / v;
+            s0 = parseFloat(document.getElementById('posInicial').value);
+            sf = parseFloat(document.getElementById('posFinal').value);
+            v = parseFloat(document.getElementById('velocidade').value);
+            const distancia = Math.abs(sf - s0);
+            const tempoTotal = distancia / v;
 
-        frase()
-        gerarTabela(s0, v, tempoTotal);
+            frase();
+            gerarTabela(s0, v, tempoTotal);
 
-        escala = largura / distancia;
-
-        posAtual = s0;
-          direcao = sf >= s0 ? 1 : -1;
+            escala = largura / distancia;
+            posAtual = s0;
+            direcao = sf >= s0 ? 1 : -1;
             fps = 60;
-            const delta = v / fps;
 
-        if (anim) {
-            cancelAnimationFrame(anim);
-        }
-        anim = requestAnimationFrame(animate);
+            if (anim) {
+                cancelAnimationFrame(anim);
+            }
+            anim = requestAnimationFrame(animate);
         }
 
         function frase() {
-            let html = "Resultados da tabela"
-            document.getElementById('re').innerHTML = html
+            document.getElementById('re').innerHTML = "Resultados da tabela";
         }
+        
         function gerarTabela(s0, v, tempoTotal) {
             let html = "<table><tr><th>Tempo (s)</th>";
-            // Cabeçalhos dos tempos
             for (let t = 0; t <= tempoTotal; t++) {
                 html += `<th>${t}</th>`;
             }
             html += "</tr><tr><th>Posição (m)</th>";
-            // Valores das posições
             for (let t = 0; t <= tempoTotal; t++) {
                 let s = s0 + v * t;
                 html += `<td>${s.toFixed(2)}</td>`;
             }
             html += "</tr></table>";
-
             document.getElementById('tabelaResultados').innerHTML = html;
         }
 
         function animate() {
-
-
             const delta = v / fps;
+            ctx.clearRect(0, 0, largura, altura);
 
-            ctx.clearRect(0, 0, largura, altura); // Limpa o canvas
-
-            // Desenhar linha do caminho
+            // Desenhar linha do caminho (eixo X) na parte inferior
             ctx.strokeStyle = "#888";
             ctx.beginPath();
-            ctx.moveTo(0, altura / 2);
-            ctx.lineTo(largura, altura / 2);
+            ctx.moveTo(0, altura - 30);
+            ctx.lineTo(largura, altura - 30);
             ctx.stroke();
 
+            // Posição do carro (na parte inferior)
             const xCarro = (posAtual - s0) * escala;
-            const yCarro = altura / 2 - 20;
-
+            const yCarro = altura - 50; // 50px acima da base
             ctx.drawImage(imagemCarro, xCarro, yCarro, 50, 40);
 
             if (missilAtivo) {
-                const g = 9.8;
-                const escalaVelocidade = 0.2; // Reduz mais a velocidade para melhor visualização
-                missilX = 50 + (missilVelInicial * Math.cos(missilAnguloRad) * missilTempo * escalaVelocidade) * escala;
-                missilY = altura - 30 - ((missilVelInicial * Math.sin(missilAnguloRad) * missilTempo - 0.5 * g * missilTempo * missilTempo) * escalaVelocidade * escala);
+                missilTempo += 0.016; // Incremento de tempo (~60fps)
+                
+                // Cálculo da posição do míssil (movimento parabólico)
+                missilX = 50 + (missilVelInicial * Math.cos(missilAnguloRad) * missilTempo) * escala;
+                
+                // Cálculo da posição Y (considerando sistema de coordenadas invertido)
+                missilY = (altura - 30) - // Posição de lançamento (30px da base)
+                         ((missilVelInicial * Math.sin(missilAnguloRad) * missilTempo - 
+                          0.5 * g * missilTempo * missilTempo) * escalaAltura * escala);
 
-                console.log('Míssil:', {
-                    x: missilX,
-                    y: missilY,
-                    tempo: missilTempo,
-                    velocidade: missilVelInicial,
-                    angulo: missilAnguloRad * 180 / Math.PI
-                });
-
-                if (missilY <= altura && missilX <= largura) {
-                    ctx.drawImage(imagemMissil, missilX, missilY - 15, 20, 20);
+                // Desenhar míssil se estiver dentro do canvas
+                if (missilY >= 0 && missilX <= largura) {
+                    ctx.save();
+                    // Rotacionar o míssil de acordo com sua trajetória
+                    const velocidadeY = missilVelInicial * Math.sin(missilAnguloRad) - g * missilTempo;
+                    const velocidadeX = missilVelInicial * Math.cos(missilAnguloRad);
+                    const anguloAtual = Math.atan2(velocidadeY, velocidadeX);
+                    
+                    ctx.translate(missilX + 10, missilY + 10);
+                    ctx.rotate(anguloAtual);
+                    ctx.drawImage(imagemMissil, -10, -10, 20, 20);
+                    ctx.restore();
                 }
 
-                // Colisão com o chão ou fora da tela
-                if (missilY >= altura || missilX >= largura) {
+                // Verificar colisão com o chão ou saída do canvas
+                if (missilY >= altura - 30 || missilX >= largura) {
                     missilAtivo = false;
                     alert('Míssil caiu ou saiu da tela!');
                 }
 
-                // Colisão com o carrinho (simplificado)
-                const missilCentroX = missilX + 10;
-                const missilCentroY = missilY - 7;
-                if (missilCentroX >= xCarro && missilCentroX <= xCarro + 50 && missilCentroY >= yCarro && missilCentroY <= yCarro + 40) {
+                // Verificar colisão com o carro
+                const colisaoX = missilX + 10 >= xCarro && missilX + 10 <= xCarro + 50;
+                const colisaoY = missilY + 10 >= yCarro && missilY + 10 <= yCarro + 40;
+                
+                if (colisaoX && colisaoY) {
                     missilAtivo = false;
                     cancelAnimationFrame(anim);
                     alert('Míssil atingiu o carrinho!');
                 }
-                missilTempo += 0.032; // Ajuste da velocidade para melhor visualização
             }
 
-            // Atualiza a posição do carro apenas se não chegou ao destino
+            // Atualizar posição do carro
             if (!((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf))) {
                 posAtual += delta * direcao;
             }
 
-            // Continua a animação se o míssil estiver ativo ou se o carro não chegou ao destino
+            // Continuar animação se necessário
             if (missilAtivo || !((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf))) {
                 anim = requestAnimationFrame(animate);
             } else {
@@ -168,38 +175,28 @@
                 anim = null;
             }
         }
-        
-
-        const imagemMissil = new Image();
-        imagemMissil.onload = () => {
-            console.log('Imagem do míssil carregada');
-        };
-        imagemMissil.onerror = () => {
-            console.error('Erro ao carregar imagem do míssil');
-            alert('Erro ao carregar imagem do míssil. Por favor, verifique se o arquivo existe.');
-        };
-        imagemMissil.src = '../img/missil.png';
 
         function lancarMissil() {
             missilVelInicial = parseFloat(document.getElementById('velInicialMissil').value);
             const anguloLancamento = parseFloat(document.getElementById('anguloLancamento').value);
+            
+            // Validar ângulo (deve estar entre 0 e 90 graus)
+            if (anguloLancamento <= 0 || anguloLancamento >= 90) {
+                alert('Ângulo deve estar entre 0 e 90 graus!');
+                return;
+            }
+            
             missilAnguloRad = anguloLancamento * Math.PI / 180;
             missilTempo = 0;
             missilAtivo = true;
             missilX = 50;
-            missilY = altura - 30;
+            missilY = altura - 30; // Posição inicial do míssil (na base)
 
-            // Cancela a animação anterior se existir
             if (anim) {
                 cancelAnimationFrame(anim);
             }
-            // Inicia uma nova animação
             anim = requestAnimationFrame(animate);
         }
-
-
     </script>
-
 </body>
 </html>
-
