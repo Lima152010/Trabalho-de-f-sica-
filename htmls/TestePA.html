@@ -40,163 +40,211 @@
     </footer>
 
     <script>
-        const imagemCarro = new Image();
-        const imagemMissil = new Image();
-        let anim;
-        let posAtual;
-        let canvas = document.getElementById('animacao');
-        let ctx = canvas.getContext('2d');
-        let largura = canvas.width;
-        let altura = canvas.height;
-        let escala, direcao;
-        let s0, sf, v, fps;
-        let missilAtivo = false;
-        let missilX = 0;
-        let missilY = 0;
-        let missilTempo = 0;
-        let missilVelInicial = 0;
-        let missilAnguloRad = 0;
-        
         // Constantes físicas
-        const g = 9.8; // Aceleração da gravidade (m/s²)
-        const escalaAltura = 0.5; // Fator de escala para a altura
+        const GRAVIDADE = 9.8; // m/s²
+        const ESCALA_ALTURA = 0.5;
+        const FPS = 60;
         
-        // Carregar imagens
-        imagemCarro.src = '../img/carro_vermelho.png';
-        imagemMissil.src = '../img/rocket.webp';
+        // Elementos do DOM
+        const canvas = document.getElementById('animacao');
+        const ctx = canvas.getContext('2d');
+        const largura = canvas.width;
+        const altura = canvas.height;
         
+        // Variáveis de estado
+        let animacaoAtiva = false;
+        let posAtual = 0;
+        let s0 = 0, sf = 100, v = 10;
+        let escala = largura / 100;
+        let direcao = 1;
+        
+        // Variáveis do míssil
+        let missilAtivo = false;
+        let missilX = 0, missilY = 0;
+        let missilTempo = 0;
+        let missilVelInicial = 30;
+        let missilAnguloRad = Math.PI/4;
+        let particulasFumaca = [];
+        
+        // Controle de animação
+        let ultimoTempo = 0;
+        const intervaloFrame = 1000 / FPS;
+    
+        // Função principal de inicialização
         function iniciar() {
             s0 = parseFloat(document.getElementById('posInicial').value);
             sf = parseFloat(document.getElementById('posFinal').value);
             v = parseFloat(document.getElementById('velocidade').value);
+            
             const distancia = Math.abs(sf - s0);
-            const tempoTotal = distancia / v;
-
-            frase();
-            gerarTabela(s0, v, tempoTotal);
-
             escala = largura / distancia;
             posAtual = s0;
             direcao = sf >= s0 ? 1 : -1;
-            fps = 60;
-
-            if (anim) {
-                cancelAnimationFrame(anim);
-            }
-            anim = requestAnimationFrame(animate);
-        }
-
-        function frase() {
-            document.getElementById('re').innerHTML = "Resultados da tabela";
-        }
-        
-        function gerarTabela(s0, v, tempoTotal) {
-            let html = "<table><tr><th>Tempo (s)</th>";
-            for (let t = 0; t <= tempoTotal; t++) {
-                html += `<th>${t}</th>`;
-            }
-            html += "</tr><tr><th>Posição (m)</th>";
-            for (let t = 0; t <= tempoTotal; t++) {
-                let s = s0 + v * t;
-                html += `<td>${s.toFixed(2)}</td>`;
-            }
-            html += "</tr></table>";
-            document.getElementById('tabelaResultados').innerHTML = html;
-        }
-
-        function animate() {
-            const delta = v / fps;
-            ctx.clearRect(0, 0, largura, altura);
-
-            // Desenhar linha do caminho (eixo X) na parte inferior
-            ctx.strokeStyle = "#888";
-            ctx.beginPath();
-            ctx.moveTo(0, altura - 30);
-            ctx.lineTo(largura, altura - 30);
-            ctx.stroke();
-
-            // Posição do carro (na parte inferior)
-            const xCarro = (posAtual - s0) * escala;
-            const yCarro = altura - 50; // 50px acima da base
-            ctx.drawImage(imagemCarro, xCarro, yCarro, 50, 40);
-
-            if (missilAtivo) {
-                missilTempo += 0.016; // Incremento de tempo (~60fps)
-                
-                // Cálculo da posição do míssil (movimento parabólico)
-                missilX = 50 + (missilVelInicial * Math.cos(missilAnguloRad) * missilTempo) * escala;
-                
-                // Cálculo da posição Y (considerando sistema de coordenadas invertido)
-                missilY = (altura - 30) - // Posição de lançamento (30px da base)
-                         ((missilVelInicial * Math.sin(missilAnguloRad) * missilTempo - 
-                          0.5 * g * missilTempo * missilTempo) * escalaAltura * escala);
-
-                // Desenhar míssil se estiver dentro do canvas
-                if (missilY >= 0 && missilX <= largura) {
-                    ctx.save();
-                    // Rotacionar o míssil de acordo com sua trajetória
-                    const velocidadeY = missilVelInicial * Math.sin(missilAnguloRad) - g * missilTempo;
-                    const velocidadeX = missilVelInicial * Math.cos(missilAnguloRad);
-                    const anguloAtual = Math.atan2(velocidadeY, velocidadeX);
-                    
-                    ctx.translate(missilX + 10, missilY + 10);
-                    ctx.rotate(anguloAtual);
-                    ctx.drawImage(imagemMissil, -10, -10, 20, 20);
-                    ctx.restore();
-                }
-
-                // Verificar colisão com o chão ou saída do canvas
-                if (missilY >= altura - 30 || missilX >= largura) {
-                    missilAtivo = false;
-                    alert('Míssil caiu ou saiu da tela!');
-                }
-
-                // Verificar colisão com o carro
-                const colisaoX = missilX + 10 >= xCarro && missilX + 10 <= xCarro + 50;
-                const colisaoY = missilY + 10 >= yCarro && missilY + 10 <= yCarro + 40;
-                
-                if (colisaoX && colisaoY) {
-                    missilAtivo = false;
-                    cancelAnimationFrame(anim);
-                    alert('Míssil atingiu o carrinho!');
-                }
-            }
-
-            // Atualizar posição do carro
-            if (!((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf))) {
-                posAtual += delta * direcao;
-            }
-
-            // Continuar animação se necessário
-            if (missilAtivo || !((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf))) {
-                anim = requestAnimationFrame(animate);
-            } else {
-                cancelAnimationFrame(anim);
-                anim = null;
+            
+            if (!animacaoAtiva) {
+                animacaoAtiva = true;
+                ultimoTempo = performance.now();
+                requestAnimationFrame(animar);
             }
         }
-
+    
+        // Função para lançar o míssil
         function lancarMissil() {
+            if (missilAtivo) return; // Impede múltiplos lançamentos simultâneos
+            
             missilVelInicial = parseFloat(document.getElementById('velInicialMissil').value);
-            const anguloLancamento = parseFloat(document.getElementById('anguloLancamento').value);
+            const angulo = parseFloat(document.getElementById('anguloLancamento').value);
+            missilAnguloRad = angulo * Math.PI / 180;
             
-            // Validar ângulo (deve estar entre 0 e 90 graus)
-            if (anguloLancamento <= 0 || anguloLancamento >= 90) {
-                alert('Ângulo deve estar entre 0 e 90 graus!');
-                return;
-            }
-            
-            missilAnguloRad = anguloLancamento * Math.PI / 180;
             missilTempo = 0;
             missilAtivo = true;
             missilX = 50;
-            missilY = altura - 30; // Posição inicial do míssil (na base)
-
-            if (anim) {
-                cancelAnimationFrame(anim);
+            missilY = altura - 50;
+            particulasFumaca = [];
+            
+            if (!animacaoAtiva) {
+                animacaoAtiva = true;
+                ultimoTempo = performance.now();
+                requestAnimationFrame(animar);
             }
-            anim = requestAnimationFrame(animate);
         }
+    
+        // Função de animação principal com controle de FPS
+        function animar(tempoAtual) {
+            if (!animacaoAtiva) return;
+            
+            const deltaTempo = tempoAtual - ultimoTempo;
+            
+            if (deltaTempo >= intervaloFrame) {
+                ultimoTempo = tempoAtual - (deltaTempo % intervaloFrame);
+                
+                ctx.clearRect(0, 0, largura, altura);
+                desenharCenario();
+                
+                // Atualizar e desenhar carro
+                const xCarro = (posAtual - s0) * escala;
+                const yCarro = altura - 70;
+                if (imgCarro.complete) {
+                    ctx.drawImage(imgCarro, xCarro, yCarro, 80, 50);
+                }
+                
+                // Atualizar posição do carro
+                if (!((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf))) {
+                    posAtual += (v / FPS) * direcao;
+                }
+                
+                // Lógica do míssil
+                if (missilAtivo) {
+                    atualizarMissil(xCarro, yCarro);
+                    desenharFumaca();
+                }
+            }
+            
+            requestAnimationFrame(animar);
+        }
+    
+        function desenharCenario() {
+            // Chão
+            ctx.fillStyle = '#4a3824';
+            ctx.fillRect(0, altura - 30, largura, 30);
+            
+            // Linha de trajeto
+            ctx.strokeStyle = '#888';
+            ctx.beginPath();
+            ctx.moveTo(0, altura - 50);
+            ctx.lineTo(largura, altura - 50);
+            ctx.stroke();
+        }
+    
+        function atualizarMissil(xAlvo, yAlvo) {
+            missilTempo += 1/FPS;
+            
+            // Cálculo seguro da posição
+            try {
+                missilX = 50 + (missilVelInicial * Math.cos(missilAnguloRad) * missilTempo) * escala;
+                const termoVertical = (missilVelInicial * Math.sin(missilAnguloRad) * missilTempo - 
+                                     0.5 * GRAVIDADE * missilTempo * missilTempo);
+                missilY = (altura - 50) - (termoVertical * ESCALA_ALTURA * escala);
+                
+                // Limitar valores para evitar NaN
+                if (isNaN(missilX) || isNaN(missilY)) {
+                    throw new Error("Valores inválidos na trajetória");
+                }
+            } catch (e) {
+                console.error("Erro no cálculo da trajetória:", e);
+                missilAtivo = false;
+                return;
+            }
+            
+            // Adicionar fumaça com verificação de limites
+            if (Math.random() < 0.3 && missilY < altura - 30) {
+                particulasFumaca.push({
+                    x: Math.max(0, Math.min(missilX - 10, largura)),
+                    y: Math.max(0, Math.min(missilY + 10, altura)),
+                    size: Math.random() * 5 + 2,
+                    alpha: 1,
+                    life: 30
+                });
+            }
+            
+            // Rotacionar míssil
+            if (imgMissil.complete) {
+                const velX = missilVelInicial * Math.cos(missilAnguloRad);
+                const velY = missilVelInicial * Math.sin(missilAnguloRad) - GRAVIDADE * missilTempo;
+                const anguloAtual = Math.atan2(velY, velX);
+                
+                ctx.save();
+                ctx.translate(missilX, missilY);
+                ctx.rotate(anguloAtual);
+                ctx.drawImage(imgMissil, -15, -8, 30, 16);
+                ctx.restore();
+            }
+            
+            // Verificar limites
+            if (missilY > altura - 30 || missilX > largura || missilX < 0 || missilY < 0) {
+                missilAtivo = false;
+                console.log("Míssil saiu da área");
+            }
+            
+            // Colisão com o carro (com tolerância)
+            if (Math.abs(missilX - xAlvo) < 40 && Math.abs(missilY - yAlvo) < 30) {
+                missilAtivo = false;
+                console.log("Míssil acertou o alvo!");
+            }
+        }
+    
+        function desenharFumaca() {
+            for (let i = particulasFumaca.length - 1; i >= 0; i--) {
+                const p = particulasFumaca[i];
+                p.life--;
+                p.alpha = p.life / 30;
+                p.y += 1;
+                
+                ctx.fillStyle = `rgba(150, 150, 150, ${p.alpha})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (p.life <= 0) {
+                    particulasFumaca.splice(i, 1);
+                }
+            }
+        }
+    
+        // Carregar imagens com fallback
+        const imgCarro = new Image();
+        imgCarro.src = '../img/carro_vermelho.png';
+        imgCarro.onerror = () => {
+            console.log("Erro ao carregar imagem do carro");
+            // Pode adicionar um retângulo como fallback
+        };
+        
+        const imgMissil = new Image();
+        imgMissil.src = '../img/rocket.webp';
+        imgMissil.onerror = () => {
+            console.log("Erro ao carregar imagem do míssil");
+            // Pode adicionar um retângulo como fallback
+        };
     </script>
 </body>
 </html>
