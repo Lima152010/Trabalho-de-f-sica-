@@ -3,8 +3,8 @@ body {
     margin: 0;
     padding: 0;
     top: 0;
-    background: #0f0f0f;
-    color: #ffffff;
+    background: #F1f1f1;
+    color: #0f0f0f;
 }
 label, input, button {
     margin: 5px;
@@ -18,8 +18,8 @@ input {
     width: 300px;
     border-radius: 5px;
     height: 40px;
-    background-color: #2e2e2e;
-    color: #ffffff;
+    background-color: #F1f1f1;
+    color: #0f0f0f;
     border: 2px solid #ffd300;
     padding: 5px;
 }
@@ -33,8 +33,8 @@ canvas {
 table {
     border-collapse: collapse;
     margin-top: 20px;
-    background-color: #2e2e2e;
-    color: #ffffff;
+    background-color: #F1f1f1;
+    color: #0f0f0f;
 }
 th, td {
     border: 2px solid #ffd300;
@@ -42,13 +42,12 @@ th, td {
     text-align: center;
 }
 th {
-    background-color: #ff1e1e;
+    background-color: #004398;
 }
 header {
-    background-color: #a02c2c;
+    background-color: #004398;
     padding: 10px;
     grid-area: h;
-    display: flex;
 }
 header h2 {
     color: #ffffff;
@@ -66,8 +65,7 @@ button {
     transition: 0.3s;
 }
 button:hover {
-    background-color: #ff1e1e;
-    color: #ffffff;
+    background-color: #ccae19;
 }
 #container {
     display: grid;
@@ -88,7 +86,7 @@ button:hover {
 footer {
     position: absolute;
     bottom: 0;
-    background-color: #a02c2c;
+    background-color: #004398;
     width: 98.7%;
     padding: 10px;
     text-align: center;

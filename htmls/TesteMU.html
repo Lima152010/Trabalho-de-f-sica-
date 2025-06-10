@@ -10,8 +10,8 @@
     <div id="corte"></div>
     <div id="container">
         <header>
-            <h2>Simulador de Movimento Uniforme</h2>
-            <img style="margin-left: 15pxa;" width="50px" src="../img/logo.png" alt="">
+            <h2 style="text-align: center;">Simulador de Movimento Uniforme</h2>
+            <a style="position: absolute; right: 30px; top: 16px; font-size: 30px;  color: black; background-color: #ffd300; padding: 10px; border-radius: 10px; text-decoration: none;" href="../index.html">Inicio</a>
         </header>
 
         <div id="forms">
@@ -38,85 +38,161 @@
 
     <script>
         const imagemCarro = new Image();
-        imagemCarro.src = 'img/carro_vermelho.png';
-
+        imagemCarro.src = '../img/carro_vermelho.png';
+    
         function iniciar() {
-        const s0 = parseFloat(document.getElementById('posInicial').value);
-        const sf = parseFloat(document.getElementById('posFinal').value);
-        const v = parseFloat(document.getElementById('velocidade').value);
-        const distancia = Math.abs(sf - s0);
-        const tempoTotal = distancia / v;
-
-        frase()
-        gerarTabela(s0, v, tempoTotal);
-        animarCarrinho(s0, sf, v, tempoTotal);
+            const s0 = parseFloat(document.getElementById('posInicial').value);
+            const sf = parseFloat(document.getElementById('posFinal').value);
+            const v = parseFloat(document.getElementById('velocidade').value);
+            const distancia = Math.abs(sf - s0);
+            const tempoTotal = distancia / v;
+    
+            frase();
+            gerarTabela(s0, v, tempoTotal);
+            animarCarrinho(s0, sf, v, tempoTotal);
         }
-
+    
         function frase() {
-            let html = "Resultados da tabela"
-            document.getElementById('re').innerHTML = html
+            document.getElementById('re').innerHTML = "Resultados da tabela";
         }
+    
         function gerarTabela(s0, v, tempoTotal) {
             let html = "<table><tr><th>Tempo (s)</th>";
-            // Cabeçalhos dos tempos
             for (let t = 0; t <= tempoTotal; t++) {
                 html += `<th>${t}</th>`;
             }
             html += "</tr><tr><th>Posição (m)</th>";
-            // Valores das posições
             for (let t = 0; t <= tempoTotal; t++) {
                 let s = s0 + v * t;
-                html += `<td>${s.toFixed(2)}</td>`;
+                html += `<td>${Math.round(s)}</td>`;
             }
             html += "</tr></table>";
-
+    
             document.getElementById('tabelaResultados').innerHTML = html;
         }
-
+    
         function animarCarrinho(s0, sf, v, tempoTotal) {
-        const canvas = document.getElementById('animacao');
-        const ctx = canvas.getContext('2d');
-        const largura = canvas.width;
-        const altura = canvas.height;
+            const canvas = document.getElementById('animacao');
+            const ctx = canvas.getContext('2d');
+            const largura = canvas.width;
+            const altura = canvas.height;
+    
+            const menor = Math.min(s0, sf);
+            const maior = Math.max(s0, sf);
+            const distancia = maior - menor;
+    
+            const deslocamentoExtra = 40;
+            const escala = (largura - deslocamentoExtra) / distancia;
+    
+            let posAtual = s0;
+            const direcao = sf >= s0 ? 1 : -1;
+            const fps = 60;
+            const intervalo = 1000 / fps;
+            const delta = v / fps;
+    
+            function desenharPonteiros() {
+                let xInicio = (s0 - menor) * escala + 15;
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(xInicio, altura / 2 - 35);
+                ctx.lineTo(xInicio, altura / 2 + 35);
+                ctx.stroke();
 
-        const distancia = Math.abs(sf - s0);
-        const escala = largura / distancia;
+                ctx.fillStyle = "blue";
+                ctx.textAlign = "center";
+                ctx.font = "14px Arial";
+                ctx.fillText("Início", xInicio, altura / 2 - 40);
+                ctx.fillText(Math.round(s0), xInicio, altura / 2 + 55);
 
-        let posAtual = s0;
-        const direcao = sf >= s0 ? 1 : -1;
-        const fps = 60;
-        const intervalo = 1000 / fps;
-        const delta = v / fps;
+                let xFim = (sf - menor) * escala;
+                xFim += deslocamentoExtra / 2;
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(xFim, altura / 2 - 35);
+                ctx.lineTo(xFim, altura / 2 + 35);
+                ctx.stroke();
 
-        function desenharCarrinho() {
-            ctx.clearRect(0, 0, largura, altura);
-
-            // Desenhar linha do caminho
-            ctx.strokeStyle = "#888";
-            ctx.beginPath();
-            ctx.moveTo(0, altura / 2);
-            ctx.lineTo(largura, altura / 2);
-            ctx.stroke();
-
-            const x = (posAtual - s0) * escala;
-            const y = altura / 2 - 20;
-
-            // Desenhar a imagem do carrinho
-            ctx.drawImage(imagemCarro, x, y, 50, 40); 
-        }
-
-        let anim = setInterval(() => {
-            desenharCarrinho();
-            posAtual += delta * direcao;
-
-            if ((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf)) {
-            desenharCarrinho(); // desenha a última vez
-            clearInterval(anim);
+                ctx.fillStyle = "red";
+                ctx.fillText("Fim", xFim, altura / 2 - 40);
+                ctx.fillText(Math.round(sf), xFim, altura / 2 + 55);
             }
-        }, intervalo);
+    
+            function desenharLinhaDistancia() {
+                ctx.strokeStyle = "green";
+                ctx.lineWidth = 2;
+                let xInicio = (s0 - menor) * escala + 15;
+                let xFim = (sf - menor) * escala + deslocamentoExtra / 2;
+                const y = altura / 2 + 20;
+                ctx.beginPath();
+                ctx.moveTo(xInicio, y);
+                ctx.lineTo(xFim, y);
+                ctx.stroke();
+
+                const setaTamanho = 7;
+                ctx.beginPath();
+                // seta esquerda
+                ctx.moveTo(xInicio, y);
+                ctx.lineTo(xInicio + setaTamanho, y - setaTamanho);
+                ctx.lineTo(xInicio + setaTamanho, y + setaTamanho);
+                ctx.closePath();
+                ctx.fillStyle = "green";
+                ctx.fill();
+
+                ctx.beginPath();
+                // seta direita
+                ctx.moveTo(xFim, y);
+                ctx.lineTo(xFim - setaTamanho, y - setaTamanho);
+                ctx.lineTo(xFim - setaTamanho, y + setaTamanho);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = "green";
+                ctx.font = "16px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(`Distância: ${Math.round(distancia)} m`, (xInicio + xFim) / 2, y - 10);
+            }
+    
+            function desenharCarrinho() {
+                ctx.clearRect(0, 0, largura, altura);
+    
+                ctx.strokeStyle = "#888";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, altura / 2);
+                ctx.lineTo(largura, altura / 2);
+                ctx.stroke();
+
+                desenharPonteiros();
+                desenharLinhaDistancia();
+    
+                let xCarro = (posAtual - menor) * escala;
+                if (posAtual >= maior) {
+                    xCarro += deslocamentoExtra / 2;
+                } else if (posAtual >= maior - distancia / 11) {
+                    xCarro += deslocamentoExtra / 4;
+                }
+
+                const y = altura / 2 - 20;
+    
+                ctx.drawImage(imagemCarro, xCarro, y, 50, 40);
+            }
+    
+            desenharCarrinho();
+    
+            let anim = setInterval(() => {
+                posAtual += delta * direcao;
+                desenharCarrinho();
+    
+                if ((direcao === 1 && posAtual >= sf) || (direcao === -1 && posAtual <= sf)) {
+                    posAtual = sf;
+                    desenharCarrinho();
+                    clearInterval(anim);
+                }
+            }, intervalo);
         }
     </script>
-
+    
 </body>
 </html>
-
