@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Movimento Uniformemente Variado com Imagem</title>
+    <link rel="stylesheet" href="../CSSs/styleMU.css">
+    <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon">
+</head>
+<body>
+    <div id="corte"></div>
+    <div id="container">
+        <header>
+            <h2>Simulador de Movimento Uniformemente Variado</h2>
+            <img style="margin-left: 15px;" width="50px" src="../img/logo.png" alt="">
+        </header>
+
+        <div id="forms">
+            <label>Posição Inicial (m): <input type="number" id="posInicial" value="0"></label>
+            <label>Posição Final (m): <input type="number" id="posFinal" value="100"></label>
+            <label>Velocidade Inicial (m/s): <input type="number" id="velocidade" value="10"></label>
+            <label>Aceleração (m/s²): <input type="number" id="aceleracao" value="2"></label>
+            <br>
+            <a href="#exe" style="text-decoration: none;"><button onclick="iniciar()">Iniciar</button></a>
+        </div>
+        <div id="resultados">
+            <canvas id="animacao" width="1080" height="120"></canvas>
+            <h2 id="re"></h2>
+            <div id="tabelaResultados"></div>
+            <div id="exe">
+                <h1>Movimento Uniformemente Variado</h1>
+                <p>O movimento uniformemente variado (MUV) é um tipo de movimento em que um corpo se desloca em linha reta com aceleração constante, ou seja, sua velocidade varia uniformemente ao longo do tempo. Neste tipo de movimento, a aceleração permanece constante, fazendo com que a velocidade aumente ou diminua de maneira uniforme. As principais equações que descrevem este movimento são:
+                <br><br>
+                • v = v₀ + a·t (Equação da velocidade)<br>
+                • S = S₀ + v₀·t + ½·a·t² (Equação da posição)<br>
+                • v² = v₀² + 2·a·ΔS (Equação de Torricelli)
+                <br><br>
+                Onde:<br>
+                - v é a velocidade final<br>
+                - v₀ é a velocidade inicial<br>
+                - a é a aceleração<br>
+                - t é o tempo<br>
+                - S é a posição final<br>
+                - S₀ é a posição inicial<br>
+                - ΔS é o deslocamento
+                <br><br>
+                Este simulador permite visualizar o movimento uniformemente variado de um carro, onde você pode definir a posição inicial, posição final, velocidade inicial e aceleração. O programa calcula e mostra a posição e velocidade do carro em cada instante através de uma tabela e uma animação.</p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        &copy; Todos direitos reservados &reg;
+    </footer>
+
+    <script>
+        const imagemCarro = new Image();
+        imagemCarro.src = '../img/carro_vermelho.png';
+
+        function iniciar() {
+            const s0 = parseFloat(document.getElementById('posInicial').value);
+            const sf = parseFloat(document.getElementById('posFinal').value);
+            const v0 = parseFloat(document.getElementById('velocidade').value);
+            const a = parseFloat(document.getElementById('aceleracao').value);
+            
+            // Calcular tempo total usando equação do MRUV
+            const delta = v0*v0 + 2*a*(sf - s0);
+            if (delta < 0) {
+                alert('Com esses valores, o carro não alcançará o destino. Ajuste os parâmetros.');
+                return;
+            }
+            const tempoTotal = (-v0 + Math.sqrt(delta)) / a;
+
+            frase();
+            gerarTabela(s0, v0, a, tempoTotal);
+            animarCarrinho(s0, sf, v0, a, tempoTotal);
+        }
+
+        function frase() {
+            let html = "Resultados da tabela";
+            document.getElementById('re').innerHTML = html;
+        }
+
+        function gerarTabela(s0, v0, a, tempoTotal) {
+            let html = "<table><tr><th>Tempo (s)</th>";
+            // Cabeçalhos dos tempos
+            const intervalos = 10;
+            const dt = tempoTotal / intervalos;
+            
+            for (let i = 0; i <= intervalos; i++) {
+                const t = i * dt;
+                html += `<th>${t.toFixed(2)}</th>`;
+            }
+            
+            html += "</tr><tr><th>Posição (m)</th>";
+            // Valores das posições
+            for (let i = 0; i <= intervalos; i++) {
+                const t = i * dt;
+                let s = s0 + v0*t + 0.5*a*t*t;
+                html += `<td>${s.toFixed(2)}</td>`;
+            }
+            
+            html += "</tr><tr><th>Velocidade (m/s)</th>";
+            // Valores das velocidades
+            for (let i = 0; i <= intervalos; i++) {
+                const t = i * dt;
+                let v = v0 + a*t;
+                html += `<td>${v.toFixed(2)}</td>`;
+            }
+            
+            html += "</tr></table>";
+            document.getElementById('tabelaResultados').innerHTML = html;
+        }
+
+        function animarCarrinho(s0, sf, v0, a, tempoTotal) {
+            const canvas = document.getElementById('animacao');
+            const ctx = canvas.getContext('2d');
+            const largura = canvas.width;
+            const altura = canvas.height;
+
+            const distancia = Math.abs(sf - s0);
+            const escala = largura / distancia;
+
+            let tempoAtual = 0;
+            const fps = 60;
+            const intervalo = 1000 / fps;
+            const dt = 1/fps;
+
+            function desenharCarrinho(pos, vel) {
+                ctx.clearRect(0, 0, largura, altura);
+
+                // Desenhar linha do caminho
+                ctx.strokeStyle = "#888";
+                ctx.beginPath();
+                ctx.moveTo(0, altura / 2);
+                ctx.lineTo(largura, altura / 2);
+                ctx.stroke();
+
+                const x = (pos - s0) * escala;
+                const y = altura / 2 - 20;
+
+                // Desenhar a imagem do carrinho
+                ctx.drawImage(imagemCarro, x, y, 50, 40);
+                
+                // Mostrar velocidade atual
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.fillText(`Velocidade: ${vel.toFixed(2)} m/s`, 10, 20);
+            }
+
+            let anim = setInterval(() => {
+                tempoAtual += dt;
+                
+                // Calcular posição e velocidade atual usando equações do MRUV
+                const pos = s0 + v0*tempoAtual + 0.5*a*tempoAtual*tempoAtual;
+                const vel = v0 + a*tempoAtual;
+                
+                desenharCarrinho(pos, vel);
+
+                if (tempoAtual >= tempoTotal) {
+                    clearInterval(anim);
+                }
+            }, intervalo);
+        }
+    </script>
+</body>
+</html>
