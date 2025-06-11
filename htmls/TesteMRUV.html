@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Movimento Uniformemente Variado com Imagem</title>
-    <link rel="stylesheet" href="../CSSs/styleMU.css">
+    <link rel="stylesheet" href="../CSSs/styleMRUV.css">
     <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon">
 </head>
 <body>
     <div id="corte"></div>
     <div id="container">
         <header>
-            <h2>Simulador de Movimento Uniformemente Variado</h2>
-            <img style="margin-left: 15px;" width="50px" src="../img/logo.png" alt="">
+            <h2 style="text-align: center;">Simulador de Movimento Uniformemente Variado</h2>
+            <a style="position: absolute; right: 30px; top: 16px; font-size: 30px;  color: black; background-color: #ffd300; padding: 10px; border-radius: 10px; text-decoration: none;" href="../index.html">Inicio</a>
         </header>
-
         <div id="forms">
             <label>Posição Inicial (m): <input type="number" id="posInicial" value="0"></label>
             <label>Posição Final (m): <input type="number" id="posFinal" value="100"></label>
@@ -50,23 +49,24 @@
     <footer>
         &copy; Todos direitos reservados &reg;
     </footer>
-
     <script>
         const imagemCarro = new Image();
         imagemCarro.src = '../img/carro_vermelho.png';
+
+        let intervaloAnimacao;
 
         function iniciar() {
             const s0 = parseFloat(document.getElementById('posInicial').value);
             const sf = parseFloat(document.getElementById('posFinal').value);
             const v0 = parseFloat(document.getElementById('velocidade').value);
             const a = parseFloat(document.getElementById('aceleracao').value);
-            
-            // Calcular tempo total usando equação do MRUV
-            const delta = v0*v0 + 2*a*(sf - s0);
+
+            const delta = v0 * v0 + 2 * a * (sf - s0);
             if (delta < 0) {
                 alert('Com esses valores, o carro não alcançará o destino. Ajuste os parâmetros.');
                 return;
             }
+
             const tempoTotal = (-v0 + Math.sqrt(delta)) / a;
 
             frase();
@@ -75,88 +75,170 @@
         }
 
         function frase() {
-            let html = "Resultados da tabela";
-            document.getElementById('re').innerHTML = html;
+            document.getElementById('re').innerHTML = "Resultados da tabela";
         }
 
         function gerarTabela(s0, v0, a, tempoTotal) {
             let html = "<table><tr><th>Tempo (s)</th>";
-            // Cabeçalhos dos tempos
             const intervalos = 10;
             const dt = tempoTotal / intervalos;
-            
+
             for (let i = 0; i <= intervalos; i++) {
                 const t = i * dt;
                 html += `<th>${t.toFixed(2)}</th>`;
             }
-            
+
             html += "</tr><tr><th>Posição (m)</th>";
-            // Valores das posições
             for (let i = 0; i <= intervalos; i++) {
                 const t = i * dt;
-                let s = s0 + v0*t + 0.5*a*t*t;
+                let s = s0 + v0 * t + 0.5 * a * t * t;
                 html += `<td>${s.toFixed(2)}</td>`;
             }
-            
+
             html += "</tr><tr><th>Velocidade (m/s)</th>";
-            // Valores das velocidades
             for (let i = 0; i <= intervalos; i++) {
                 const t = i * dt;
-                let v = v0 + a*t;
+                let v = v0 + a * t;
                 html += `<td>${v.toFixed(2)}</td>`;
             }
-            
+
             html += "</tr></table>";
             document.getElementById('tabelaResultados').innerHTML = html;
         }
 
         function animarCarrinho(s0, sf, v0, a, tempoTotal) {
+            clearInterval(intervaloAnimacao);
+
             const canvas = document.getElementById('animacao');
             const ctx = canvas.getContext('2d');
             const largura = canvas.width;
             const altura = canvas.height;
 
-            const distancia = Math.abs(sf - s0);
-            const escala = largura / distancia;
+            const menor = Math.min(s0, sf);
+            const maior = Math.max(s0, sf);
+            const distancia = maior - menor;
+
+            // Espaço extra para os ponteiros
+            const deslocamentoExtra = 40;
+            // Escala para ajustar a distância ao tamanho do canvas
+            const escala = (largura - deslocamentoExtra) / distancia;
 
             let tempoAtual = 0;
             const fps = 60;
             const intervalo = 1000 / fps;
-            const dt = 1/fps;
+            const dt = 1 / fps;
+
+            function desenharPonteiros() {
+                // Posição inicial do ponteiro azul
+                let xInicio = (s0 - menor) * escala + 15;
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(xInicio, altura / 2 - 35);
+                ctx.lineTo(xInicio, altura / 2 + 35);
+                ctx.stroke();
+
+                ctx.fillStyle = "blue";
+                ctx.textAlign = "center";
+                ctx.font = "14px Arial";
+                ctx.fillText("Início", xInicio, altura / 2 - 40);
+                ctx.fillText(Math.round(s0), xInicio, altura / 2 + 55);
+
+                // Posição final do ponteiro vermelho
+                let xFim = (sf - menor) * escala + deslocamentoExtra / 2;
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(xFim, altura / 2 - 35);
+                ctx.lineTo(xFim, altura / 2 + 35);
+                ctx.stroke();
+
+                ctx.fillStyle = "red";
+                ctx.fillText("Fim", xFim, altura / 2 - 40);
+                ctx.fillText(Math.round(sf), xFim, altura / 2 + 55);
+            }
+
+            function desenharLinhaDistancia() {
+                ctx.strokeStyle = "green";
+                ctx.lineWidth = 2;
+                let xInicio = (s0 - menor) * escala + 15;
+                let xFim = (sf - menor) * escala + deslocamentoExtra / 2;
+                const y = altura / 2 + 27;
+                ctx.beginPath();
+                ctx.moveTo(xInicio, y);
+                ctx.lineTo(xFim, y);
+                ctx.stroke();
+
+                const setaTamanho = 7;
+                ctx.beginPath();
+                // seta esquerda
+                ctx.moveTo(xInicio, y);
+                ctx.lineTo(xInicio + setaTamanho, y - setaTamanho);
+                ctx.lineTo(xInicio + setaTamanho, y + setaTamanho);
+                ctx.closePath();
+                ctx.fillStyle = "green";
+                ctx.fill();
+
+                ctx.beginPath();
+                // seta direita
+                ctx.moveTo(xFim, y);
+                ctx.lineTo(xFim - setaTamanho, y - setaTamanho);
+                ctx.lineTo(xFim - setaTamanho, y + setaTamanho);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = "green";
+                ctx.font = "16px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(`Distância: ${Math.round(distancia)} m`, (xInicio + xFim) / 2, y - 10);
+            }
 
             function desenharCarrinho(pos, vel) {
                 ctx.clearRect(0, 0, largura, altura);
 
-                // Desenhar linha do caminho
+                // Linha da pista
                 ctx.strokeStyle = "#888";
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(0, altura / 2);
                 ctx.lineTo(largura, altura / 2);
                 ctx.stroke();
 
-                const x = (pos - s0) * escala;
+                // Desenha ponteiros e linha de distância
+                desenharPonteiros();
+                desenharLinhaDistancia();
+
+                // Posição horizontal do carro
+                let xCarro = (pos - menor) * escala;
+                // Ajuste de deslocamento extra próximo do fim para manter no canvas
+                if (pos >= maior) {
+                    xCarro += deslocamentoExtra / 2;
+                } else if (pos >= maior - distancia / 11) {
+                    xCarro += deslocamentoExtra / 4;
+                }
+
                 const y = altura / 2 - 20;
 
-                // Desenhar a imagem do carrinho
-                ctx.drawImage(imagemCarro, x, y, 50, 40);
-                
-                // Mostrar velocidade atual
+                ctx.drawImage(imagemCarro, xCarro, y, 50, 40);
+
+                // Informação de velocidade e posição
                 ctx.fillStyle = '#000';
                 ctx.font = '14px Arial';
-                ctx.fillText(`Velocidade: ${vel.toFixed(2)} m/s`, 10, 20);
+                ctx.fillText(`Velocidade: ${vel.toFixed(2)} m/s`, 130, 15);
+                ctx.fillText(`Posição: ${pos.toFixed(2)} m`, 130, 30);
             }
 
-            let anim = setInterval(() => {
+            intervaloAnimacao = setInterval(() => {
                 tempoAtual += dt;
-                
-                // Calcular posição e velocidade atual usando equações do MRUV
-                const pos = s0 + v0*tempoAtual + 0.5*a*tempoAtual*tempoAtual;
-                const vel = v0 + a*tempoAtual;
-                
+
+                const pos = s0 + v0 * tempoAtual + 0.5 * a * tempoAtual * tempoAtual;
+                const vel = v0 + a * tempoAtual;
+
                 desenharCarrinho(pos, vel);
 
                 if (tempoAtual >= tempoTotal) {
-                    clearInterval(anim);
+                    clearInterval(intervaloAnimacao);
+                    desenharCarrinho(sf, v0 + a * tempoTotal);
                 }
             }, intervalo);
         }

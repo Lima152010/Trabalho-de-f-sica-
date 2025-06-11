@@ -1,0 +1,128 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    background: #F1f1f1;
+    color: #0f0f0f;
+}
+label, input, button {
+    margin: 5px;
+    display: block;
+}
+label {
+    margin-top: 30px;
+    text-align: center;
+}
+input {
+    width: 300px;
+    border-radius: 5px;
+    height: 40px;
+    background-color: #F1f1f1;
+    color: #0f0f0f;
+    border: 2px solid #ffd300;
+    padding: 5px;
+}
+canvas {
+    background: #ffffff;
+    border: 2px solid #ffd300;
+    display: block;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+table {
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #F1f1f1;
+    color: #0f0f0f;
+}
+th, td {
+    border: 2px solid #ffd300;
+    padding: 20px;
+    text-align: center;
+}
+th {
+    background-color: #004398;
+}
+header {
+    background-color: #004398;
+    padding: 10px;
+    grid-area: h;
+}
+header h2 {
+    color: #ffffff;
+}
+button {
+    width: 120px;
+    height: 50px;
+    margin: auto;
+    border-radius: 10px;
+    background-color: #ffd300;
+    color: #0f0f0f;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover {
+    background-color: #ccae19;
+}
+#container {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-areas: 
+        "h h"
+        "c r";
+}
+#forms {
+    grid-area: c;
+    margin: auto;
+    margin-top: 50px;
+}
+#resultados {
+    grid-area: r;
+    margin: 10px 0 0 30px;
+}
+footer {
+    position: absolute;
+    bottom: 0;
+    background-color: #004398;
+    width: 98.7%;
+    padding: 10px;
+    text-align: center;
+    color: #ffffff;
+}
+#tabelaResultados {
+    overflow-x: auto;
+    margin-top: 120px;
+    width: 1080px;
+}
+#corte {
+    width: 2px;
+    height: 620px;
+    background-color: #ffd300;
+    position: absolute;
+    left: 380px;
+    top: 88px;
+}
+#exe:target {
+    display: none;
+}
+#exe {
+    margin-top: -130px;
+    width: 1080px;
+    font-size: 16px;
+}
+#exe h1 {
+    text-align: center;
+}
+#exe p {
+    text-align: justify;
+}
+#re {
+    position: absolute;
+    left: 760px;
+    top: 250px;
+    font-size: 40px;
+    color: #ffd300;
+}
