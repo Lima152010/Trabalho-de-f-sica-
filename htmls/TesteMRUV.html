@@ -118,9 +118,7 @@
             const maior = Math.max(s0, sf);
             const distancia = maior - menor;
 
-            // Espaço extra para os ponteiros
             const deslocamentoExtra = 40;
-            // Escala para ajustar a distância ao tamanho do canvas
             const escala = (largura - deslocamentoExtra) / distancia;
 
             let tempoAtual = 0;
@@ -129,7 +127,6 @@
             const dt = 1 / fps;
 
             function desenharPonteiros() {
-                // Posição inicial do ponteiro azul
                 let xInicio = (s0 - menor) * escala + 15;
                 ctx.strokeStyle = "blue";
                 ctx.lineWidth = 3;
@@ -144,7 +141,6 @@
                 ctx.fillText("Início", xInicio, altura / 2 - 40);
                 ctx.fillText(Math.round(s0), xInicio, altura / 2 + 55);
 
-                // Posição final do ponteiro vermelho
                 let xFim = (sf - menor) * escala + deslocamentoExtra / 2;
                 ctx.strokeStyle = "red";
                 ctx.lineWidth = 3;
@@ -171,7 +167,6 @@
 
                 const setaTamanho = 7;
                 ctx.beginPath();
-                // seta esquerda
                 ctx.moveTo(xInicio, y);
                 ctx.lineTo(xInicio + setaTamanho, y - setaTamanho);
                 ctx.lineTo(xInicio + setaTamanho, y + setaTamanho);
@@ -180,7 +175,6 @@
                 ctx.fill();
 
                 ctx.beginPath();
-                // seta direita
                 ctx.moveTo(xFim, y);
                 ctx.lineTo(xFim - setaTamanho, y - setaTamanho);
                 ctx.lineTo(xFim - setaTamanho, y + setaTamanho);
@@ -196,7 +190,6 @@
             function desenharCarrinho(pos, vel) {
                 ctx.clearRect(0, 0, largura, altura);
 
-                // Linha da pista
                 ctx.strokeStyle = "#888";
                 ctx.lineWidth = 1;
                 ctx.beginPath();
@@ -204,13 +197,11 @@
                 ctx.lineTo(largura, altura / 2);
                 ctx.stroke();
 
-                // Desenha ponteiros e linha de distância
                 desenharPonteiros();
                 desenharLinhaDistancia();
 
-                // Posição horizontal do carro
                 let xCarro = (pos - menor) * escala;
-                // Ajuste de deslocamento extra próximo do fim para manter no canvas
+
                 if (pos >= maior) {
                     xCarro += deslocamentoExtra / 2;
                 } else if (pos >= maior - distancia / 11) {
@@ -221,7 +212,6 @@
 
                 ctx.drawImage(imagemCarro, xCarro, y, 50, 40);
 
-                // Informação de velocidade e posição
                 ctx.fillStyle = '#000';
                 ctx.font = '14px Arial';
                 ctx.fillText(`Velocidade: ${vel.toFixed(2)} m/s`, 130, 15);
